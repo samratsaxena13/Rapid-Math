@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+        <link rel="icon" type="image/x-icon" href="favicon.ico">
+        <title>Rapid Math</title>
+    </head>
+    
+    <body>
+        <center id="main">
+            <h1 id="heading">Rapid Math</h1>
+            <h4 class="modal-line">Your Score: <span style="color: darkblue; font-size: 25px;" id="score">0</span> </h4>
+            <div id="questioning-section">
+                <h1 id="question">---</h1>
+                <span>
+                    <input onchange="checkAnswer()" id="input" type="number" placeholder="Type answer here">&nbsp;
+                    <label id="time"><span id="seconds">60</span> seconds</label>
+                </span>
+            </div>
+            <br>
+        </center>
+        <div style="text-align: center;" id="startModal" class="modals modal fade">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 id="modal-heading">Welcome!</h1>
+                        <hr style="border-color: grey; border-width: 2px; width: 50%;">
+                    </div>
+                    <div class="modal-body">
+                        <h4 class="modal-line">Solve as many expressions as you can under one minute!</h4>
+                        <hr style="border-color: grey; border-width: 2px; width: 50%;">
+                        <h4 class="modal-line">Hover over these to choose one of the following:</h4>
+                        <span>
+                            <button id="add" class="operators" onclick="setAdd()">&nbsp;+&nbsp;</button>&nbsp;
+                            <button id="sub" class="operators" onclick="setSub()">&nbsp;-&nbsp;</button>&nbsp;
+                            <button id="mul" class="operators" onclick="setMul()">&nbsp;×&nbsp;</button>&nbsp;
+                            <button id="div" class="operators" onclick="setDiv()">&nbsp;÷&nbsp;</button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="margin-top: 115px; text-align: center;" id="overModal" class="modals modal fade">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 id="modal-heading">Times Up!</h1>
+                        <hr style="border-color: grey; border-width: 2px; width: 50%;">
+                    </div>
+                    <div class="modal-body">
+                        <h4 class="modal-line">Your Score: <span style="color: darkblue; font-size: 25px;" id="modal-score">0</span> </h4>
+                        <hr style="border-color: grey; border-width: 2px; width: 50%;"><br>
+                        <button onclick="tryAgain()" class="btn btn-primary">Try Again</button><br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <style>
+        body {
+            font-family: 'Montserrat';
+        }
+        .modals {
+            margin-top: 100px;
+            height: 100%;
+        }
+        #modal-heading {
+            color: #3636ff;
+            font-weight: bolder;
+        }
+        .modal-line {
+            color: black;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .operators {
+            font-size: 50px;
+            font-weight: bold;     
+        }
+        #heading {
+            color: #3636ff;
+            font-weight: bolder;
+            font-size: 50px;
+            margin-top: 130px;
+        }
+        #questioning-section {
+            margin-top: 50px;
+        }
+        #question {
+            width: fit-content;
+            color: black;
+            font-weight: bold;
+            font-size: 100px;
+            border: 5px black solid;
+            border-radius: 20px;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            padding-right: 40px;
+            padding-left: 40px;
+        }
+        #input {
+            color: black;
+            font-size: 20px;
+            border: 2px grey solid;
+        }
+        #time {
+            font-size: 18px;
+        }
+        #seconds {
+            font-size: 25px;
+            font-weight: bolder;
+        }
+    </style>
+
+    <script>
+
+        var start = "no";
+        var operation = "";
+        var question = "";
+
+        var time = 60;
+        var score = 0;
+        var first = 0;
+        var second = 0;
+        var input = 0;
+        var answer = 0;
+
+        document.getElementById("startModal").addEventListener('click', checkModal);
+        document.getElementById("add").addEventListener('click', startGame);
+        document.getElementById("sub").addEventListener('click', startGame);
+        document.getElementById("mul").addEventListener('click', startGame);
+        document.getElementById("div").addEventListener('click', startGame);
+
+        $(document).ready(setTimeout(function(){$('#startModal').modal();},500));
+
+        function checkModal(){
+            if(start == "no"){
+                setTimeout(function(){
+                    $('#startModal').modal();
+                },400);
+            }
+        }
+        function tryAgain(){location.reload();}
+
+        function showQuestion(){
+            if(operation=="+"){
+                first = Math.round(Math.random() * 20);
+                second = Math.round(Math.random() * 20);
+            }
+            if(operation=="-"){
+                first = Math.round(Math.random() * 20);
+                second = Math.round(Math.random() * 20);
+            }
+            if(operation=="×"){
+                first = Math.round(Math.random() * 50);
+                second = Math.round(Math.random() * 5);
+            }
+            if(operation=="÷"){
+                first = Math.round(Math.random() * 50) -1;
+                second = Math.round(Math.random() * 4) +1;
+            }
+            question = first + " " + operation + " " + second;
+            if(second>first){
+                question = second + " " + operation + " " + first;
+            }
+            document.getElementById("question").innerHTML = question;
+        }
+        function checkAnswer(){
+            input = document.getElementById("input").value;
+            if(operation=="+"){answer=first+second;}
+            if(operation=="-"){answer=first-second; if(second>first){answer=second-first;}}
+            if(operation=="×"){answer=first*second;}
+            if(operation=="÷"){answer=first/second; if(second>first){answer=second-first;}}
+            if(input==answer){
+                score++;
+                document.getElementById("score").innerHTML = score;
+                showQuestion();
+            } else {
+                document.getElementById("input").value == ""
+            }
+        }
+
+        function startGame(){
+            start = "yes"; 
+            document.getElementById("startModal").removeEventListener('click', checkModal); 
+            $('#startModal').modal('hide'); 
+            setTimeout(function(){
+                showQuestion();
+                var updateTime = setInterval(function(){
+                    time--; 
+                    if(time<=10){document.getElementById("seconds").style.color = "red";}
+                    if(time==0){clearInterval(updateTime); setTimeout(function(){document.getElementById("modal-score").innerHTML = score; $('#overModal').modal();}, 1000);}
+                    document.getElementById("seconds").innerHTML = time;
+                }, 1000);
+            }, 1000);
+        }
+
+        function setAdd(){operation = "+"; document.getElementById("question").innerHTML = "<span id='first-no'>---</span> + <span id='second-no'>---</span>";}
+        function setSub(){operation = "-"; document.getElementById("question").innerHTML = "<span id='first-no'>---</span> - <span id='second-no'>---</span>";}
+        function setMul(){operation = "×"; document.getElementById("question").innerHTML = "<span id='first-no'>---</span> × <span id='second-no'>---</span>";}
+        function setDiv(){operation = "÷"; document.getElementById("question").innerHTML = "<span id='first-no'>---</span> ÷ <span id='second-no'>---</span>";}
+
+    </script>
+
+</html>
