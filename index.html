@@ -10,7 +10,7 @@
         <title>Rapid Math</title>
     </head>
     
-    <body>
+    <body id="body">
         <center id="main">
             <h1 id="heading">Rapid Math</h1>
             <h4 class="modal-line">Your Score: <span style="color: darkblue; font-size: 25px;" id="score">0</span> </h4>
@@ -33,7 +33,7 @@
                     <div class="modal-body">
                         <h4 class="modal-line">Solve as many expressions as you can under one minute!</h4>
                         <hr style="border-color: grey; border-width: 2px; width: 50%;">
-                        <h4 class="modal-line">Hover over these to choose one of the following:</h4>
+                        <h4 class="modal-line">Choose one of the following:</h4>
                         <span>
                             <button id="add" class="operators" onclick="setAdd()">&nbsp;+&nbsp;</button>&nbsp;
                             <button id="sub" class="operators" onclick="setSub()">&nbsp;-&nbsp;</button>&nbsp;
@@ -54,7 +54,7 @@
                     <div class="modal-body">
                         <h4 class="modal-line">Your Score: <span style="color: darkblue; font-size: 25px;" id="modal-score">0</span> </h4>
                         <hr style="border-color: grey; border-width: 2px; width: 50%;"><br>
-                        <button onclick="tryAgain()" class="btn btn-primary">Try Again</button><br>
+                        <button onclick="tryAgain()" class="btn btn-primary">Play Again</button><br>
                     </div>
                 </div>
             </div>
@@ -120,10 +120,12 @@
     <script>
 
         var start = "no";
+        var end = "no";
         var operation = "";
         var question = "";
 
         var time = 60;
+        var backup = 0;
         var score = 0;
         var first = 0;
         var second = 0;
@@ -144,44 +146,57 @@
                     $('#startModal').modal();
                 },400);
             }
+            if(end == "yes"){
+                    setTimeout(function(){
+                        $('#overModal').modal();
+                    },400);
+                }
         }
         function tryAgain(){location.reload();}
 
         function showQuestion(){
             if(operation=="+"){
-                first = Math.round(Math.random() * 20);
-                second = Math.round(Math.random() * 20);
+                first = Math.floor(Math.random() * 20);
+                second = Math.floor(Math.random() * 20);
             }
             if(operation=="-"){
-                first = Math.round(Math.random() * 20);
-                second = Math.round(Math.random() * 20);
+                first = Math.floor(Math.random() * 20);
+                second = Math.floor(Math.random() * 20);
             }
             if(operation=="×"){
-                first = Math.round(Math.random() * 50);
-                second = Math.round(Math.random() * 5);
+                first = Math.floor(Math.random() * 50);
+                second = Math.floor(Math.random() * 5);
             }
             if(operation=="÷"){
-                first = Math.round(Math.random() * 50) -1;
-                second = Math.round(Math.random() * 4) +1;
+                first = Math.floor(Math.random() * 50) + 1;
+                second = Math.floor(Math.random() * 4) + 1;
             }
             question = first + " " + operation + " " + second;
+            backup = second;
             if(second>first){
                 question = second + " " + operation + " " + first;
+                backup = first;
             }
+            if(operation=="+"){answer=first+second;}
+            if(operation=="-"){answer=first-second; if(second>first){answer=second-first;}}
+            if(operation=="×"){answer=first*second;}
+            if(operation=="÷"){answer=(first/second); if(second>first){answer=(second/first);}
+            if (backup==3&&answer!=Math.floor(answer)){answer=answer.toFixed(2); answer[-1,-2]=answer[-1,-2]+1}}
             document.getElementById("question").innerHTML = question;
         }
         function checkAnswer(){
             input = document.getElementById("input").value;
-            if(operation=="+"){answer=first+second;}
-            if(operation=="-"){answer=first-second; if(second>first){answer=second-first;}}
-            if(operation=="×"){answer=first*second;}
-            if(operation=="÷"){answer=first/second; if(second>first){answer=second-first;}}
             if(input==answer){
                 score++;
                 document.getElementById("score").innerHTML = score;
+                document.getElementById("input").value = "";
+                document.getElementById("body").style.backgroundColor = "lime";
+                setTimeout(function(){document.getElementById("body").style.backgroundColor = "white";}, 100);
                 showQuestion();
             } else {
-                document.getElementById("input").value == ""
+                document.getElementById("input").value = "";
+                document.getElementById("body").style.backgroundColor = "red";
+                setTimeout(function(){document.getElementById("body").style.backgroundColor = "white";}, 100);
             }
         }
 
@@ -194,7 +209,7 @@
                 var updateTime = setInterval(function(){
                     time--; 
                     if(time<=10){document.getElementById("seconds").style.color = "red";}
-                    if(time==0){clearInterval(updateTime); setTimeout(function(){document.getElementById("modal-score").innerHTML = score; $('#overModal').modal();}, 1000);}
+                    if(time==0){clearInterval(updateTime); setTimeout(function(){document.getElementById("modal-score").innerHTML = score; end="yes"; document.getElementById("overModal").addEventListener('click', checkModal); $('#overModal').modal();}, 1000);}
                     document.getElementById("seconds").innerHTML = time;
                 }, 1000);
             }, 1000);
